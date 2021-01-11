@@ -20,13 +20,23 @@
 
 let categories = [];
 
-
 /** Get NUM_CATEGORIES random category from API.
  *
  * Returns array of category ids
  */
 
-function getCategoryIds() {
+async function getCategoryIds() {
+	const response = await axios.get('http://jservice.io/api/categories', {
+		params: {
+			count: 6,
+			offset: Math.floor(Math.random() * 999)
+		}
+	});
+	// Do i need this map method below? maybe take it out later to see.
+	const categories = response.data.map((category) => ({
+		id: category.id
+	}));
+	return categories;
 }
 
 /** Return object with data about a category:
@@ -41,7 +51,22 @@ function getCategoryIds() {
  *   ]
  */
 
-function getCategory(catId) {
+async function getCategory(catId) {
+	const response = await axios.get('http://jservice.io/api/category', {
+		params: {
+			id: catId
+		}
+	});
+	const cluesArr = response.data.clues.map((clues) => ({
+		question: clues.question,
+		answer: clues.answer,
+		showing: null
+	}));
+	const catObject = {
+		title: response.data.title,
+		clues: cluesArr
+	};
+	return catObject;
 }
 
 /** Fill the HTML table#jeopardy with the categories & cells for questions.
@@ -53,6 +78,12 @@ function getCategory(catId) {
  */
 
 async function fillTable() {
+	createTable();
+
+	const catHead = document.querySelector('#jeopardyTable').tHead.firstElementChild.children;
+	for (let i = 0; i < 6; i++) {
+		catHead[i].innerText = categories[i].title;
+	}
 }
 
 /** Handle clicking on a clue: show the question or answer.
@@ -64,29 +95,54 @@ async function fillTable() {
  * */
 
 function handleClick(evt) {
+	let clickedItem = evt.target.id;
+	console.log(clickedItem);
+	let tableSpot = document.querySelector(`#${clickedItem}`);
+	console.log(tableSpot);
+	if (categories[clickedItem[1]].clues[clickedItem[3]].showing === null) {
+		categories[clickedItem[1]].clues[clickedItem[3]].showing = 'question';
+		tableSpot.innerHTML = categories[clickedItem[1]].clues[clickedItem[3]].question;
+	} else if (categories[clickedItem[1]].clues[clickedItem[3]].showing === 'question') {
+		categories[clickedItem[1]].clues[clickedItem[3]].showing = 'answer';
+		tableSpot.innerHTML = categories[clickedItem[1]].clues[clickedItem[3]].answer;
+	} else {
+		return;
+	}
 }
 
 /** Wipe the current Jeopardy board, show the loading spinner,
  * and update the button used to fetch data.
  */
 
-function showLoadingView() {
-
-}
+function showLoadingView() {}
 
 /** Remove the loading spinner and update the button used to fetch data. */
 
-function hideLoadingView() {
-}
+function hideLoadingView() {}
 
 /** Start game:
  *
- * - get random category Ids
- * - get data for each category
+ * - get random category Ids (maybe I don't do this here)
+ * - get data for each category (maybe I don't do this here)
  * - create HTML table
  * */
 
 async function setupAndStart() {
+	let catIds = await getCategoryIds();
+	console.log(catIds);
+
+	categories = [];
+
+	for (let catId of catIds) {
+		categories.push(await getCategory(catId.id));
+	}
+
+	const bodyCheck = document.body;
+	if (bodyCheck.firstElementChild.tagName === 'TABLE') {
+		bodyCheck.firstElementChild.innerHTML = '';
+	}
+	fillTable();
+	$('#jeopardyTable').on('click', 'td', handleClick);
 }
 
 /** On click of start / restart button, set up game. */
@@ -96,3 +152,61 @@ async function setupAndStart() {
 /** On page load, add event handler for clicking clues */
 
 // TODO
+
+function shuffleArray(array) {
+	let newArr = array;
+	for (let i = newArr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[ newArr[i], newArr[j] ] = [ newArr[j], newArr[i] ];
+	}
+	return newArr;
+}
+
+// create start button that will initiate setupAndStart() and setup event listener for start button
+function pageLoad() {
+	const selectBody = document.body;
+	const title = document.createElement('H1');
+	title.innerText = "It's Jeopardy!";
+	const startBtn = document.createElement('BUTTON');
+	startBtn.innerText = 'Start New Game';
+	startBtn.setAttribute('id', 'startButton');
+	selectBody.prepend(startBtn);
+	selectBody.prepend(title);
+
+	const selectBtn = document.querySelector('#startButton');
+	selectBtn.addEventListener('click', function(e) {
+		e.preventDefault();
+		setupAndStart();
+	});
+}
+
+pageLoad();
+
+function createTable() {
+	const selectBody = document.body;
+	const tbl = document.createElement('table');
+	tbl.setAttribute('id', 'jeopardyTable');
+	const tblHead = document.createElement('thead');
+	tbl.appendChild(tblHead);
+	const tblHeadRow = document.createElement('tr');
+	tblHead.appendChild(tblHeadRow);
+	for (let i = 0; i < 6; i++) {
+		let head = document.createElement('th');
+		tblHeadRow.appendChild(head);
+	}
+	const tblBody = document.createElement('tbody');
+	tblBody.setAttribute('id', 'tableBody');
+	tbl.appendChild(tblBody);
+	for (let i = 0; i < 5; i++) {
+		let tblBodyRow = document.createElement('tr');
+		for (let j = 0; j < 6; j++) {
+			let tblBodyTD = document.createElement('td');
+			tblBodyTD.setAttribute('id', `p${j}-${i}`);
+			tblBodyTD.innerText = '?';
+			tblBodyRow.appendChild(tblBodyTD);
+		}
+		tblBody.appendChild(tblBodyRow);
+	}
+
+	selectBody.prepend(tbl);
+}
