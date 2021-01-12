@@ -96,9 +96,9 @@ async function fillTable() {
 
 function handleClick(evt) {
 	let clickedItem = evt.target.id;
-	console.log(clickedItem);
+
 	let tableSpot = document.querySelector(`#${clickedItem}`);
-	console.log(tableSpot);
+
 	if (categories[clickedItem[1]].clues[clickedItem[3]].showing === null) {
 		categories[clickedItem[1]].clues[clickedItem[3]].showing = 'question';
 		tableSpot.innerHTML = categories[clickedItem[1]].clues[clickedItem[3]].question;
@@ -129,7 +129,6 @@ function hideLoadingView() {}
 
 async function setupAndStart() {
 	let catIds = await getCategoryIds();
-	console.log(catIds);
 
 	categories = [];
 
@@ -165,13 +164,24 @@ function shuffleArray(array) {
 // create start button that will initiate setupAndStart() and setup event listener for start button
 function pageLoad() {
 	const selectBody = document.body;
-	const title = document.createElement('H1');
-	title.innerText = "It's Jeopardy!";
+	const titleDiv = document.createElement('div');
+	titleDiv.setAttribute('id', 'titleDiv');
+	const jeopLogo = document.createElement('img');
+	jeopLogo.setAttribute('src', 'https://www.c2cnt.com/wp-content/uploads/jeopardy-logo.png');
+	jeopLogo.setAttribute('width', '400');
+	jeopLogo.setAttribute('height', '150');
+	titleDiv.appendChild(jeopLogo);
+	const secondDiv = document.createElement('div');
+	secondDiv.setAttribute('id', 'secondDiv');
+	const buttonDiv = document.createElement('div');
+	buttonDiv.setAttribute('id', 'buttonDiv');
 	const startBtn = document.createElement('BUTTON');
 	startBtn.innerText = 'Start New Game';
 	startBtn.setAttribute('id', 'startButton');
-	selectBody.prepend(startBtn);
-	selectBody.prepend(title);
+	buttonDiv.append(startBtn);
+	selectBody.prepend(buttonDiv);
+	selectBody.prepend(secondDiv);
+	selectBody.prepend(titleDiv);
 
 	const selectBtn = document.querySelector('#startButton');
 	selectBtn.addEventListener('click', function(e) {
@@ -183,10 +193,11 @@ function pageLoad() {
 pageLoad();
 
 function createTable() {
-	const selectBody = document.body;
+	const selectSecondDiv = document.querySelector('div').nextSibling;
 	const tbl = document.createElement('table');
 	tbl.setAttribute('id', 'jeopardyTable');
 	const tblHead = document.createElement('thead');
+	tblHead.setAttribute('id', 'tableHead');
 	tbl.appendChild(tblHead);
 	const tblHeadRow = document.createElement('tr');
 	tblHead.appendChild(tblHeadRow);
@@ -208,5 +219,5 @@ function createTable() {
 		tblBody.appendChild(tblBodyRow);
 	}
 
-	selectBody.prepend(tbl);
+	selectSecondDiv.prepend(tbl);
 }
