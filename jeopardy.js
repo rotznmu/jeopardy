@@ -174,6 +174,7 @@ function pageLoad() {
 	titleDiv.setAttribute('id', 'titleDiv');
 	const jeopLogo = document.createElement('img');
 	jeopLogo.setAttribute('src', 'https://www.c2cnt.com/wp-content/uploads/jeopardy-logo.png');
+	jeopLogo.setAttribute('id', 'logo');
 	jeopLogo.setAttribute('width', '400');
 	jeopLogo.setAttribute('height', '150');
 	titleDiv.appendChild(jeopLogo);
