@@ -84,6 +84,8 @@ async function fillTable() {
 	for (let i = 0; i < 6; i++) {
 		catHead[i].innerText = categories[i].title;
 	}
+	const selectSpinnerDiv = document.querySelector('div').nextSibling.nextSibling;
+	selectSpinnerDiv.classList.toggle('loader');
 }
 
 /** Handle clicking on a clue: show the question or answer.
@@ -128,6 +130,9 @@ function hideLoadingView() {}
  * */
 
 async function setupAndStart() {
+	const selectSpinnerDiv = document.querySelector('div').nextSibling.nextSibling;
+	selectSpinnerDiv.classList.toggle('loader');
+
 	let catIds = await getCategoryIds();
 
 	categories = [];
@@ -152,6 +157,7 @@ async function setupAndStart() {
 
 // TODO
 
+//Have not used shuffleArray yet
 function shuffleArray(array) {
 	let newArr = array;
 	for (let i = newArr.length - 1; i > 0; i--) {
@@ -173,13 +179,18 @@ function pageLoad() {
 	titleDiv.appendChild(jeopLogo);
 	const secondDiv = document.createElement('div');
 	secondDiv.setAttribute('id', 'secondDiv');
+
 	const buttonDiv = document.createElement('div');
 	buttonDiv.setAttribute('id', 'buttonDiv');
 	const startBtn = document.createElement('BUTTON');
 	startBtn.innerText = 'Start New Game';
 	startBtn.setAttribute('id', 'startButton');
 	buttonDiv.append(startBtn);
+	const spinnerDiv = document.createElement('div');
+	spinnerDiv.setAttribute('class', 'loader');
+	spinnerDiv.classList.toggle('loader');
 	selectBody.prepend(buttonDiv);
+	selectBody.prepend(spinnerDiv);
 	selectBody.prepend(secondDiv);
 	selectBody.prepend(titleDiv);
 
@@ -194,6 +205,9 @@ pageLoad();
 
 function createTable() {
 	const selectSecondDiv = document.querySelector('div').nextSibling;
+	while (selectSecondDiv.hasChildNodes()) {
+		selectSecondDiv.removeChild(selectSecondDiv.firstChild);
+	}
 	const tbl = document.createElement('table');
 	tbl.setAttribute('id', 'jeopardyTable');
 	const tblHead = document.createElement('thead');

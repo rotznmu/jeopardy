@@ -7,11 +7,13 @@
 */
 
 body {
-	background-color: #115ff4;
+	background-color: rgb(7, 37, 133);
 }
 
 #titleDiv {
-	text-align: center;
+	position: relative;
+	left: 40%;
+	margin-top: -2%;
 }
 
 #buttonDiv {
@@ -28,6 +30,7 @@ body {
 }
 #jeopardyTable {
 	border-collapse: collapse;
+	margin: 0 auto;
 }
 
 th {
@@ -41,6 +44,7 @@ th {
 td {
 	height: 8em;
 	color: goldenrod;
+	cursor: pointer;
 }
 
 #startButton {
@@ -81,4 +85,25 @@ td {
 	color: #fff;
 	outline: 0;
 	box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+}
+
+.loader {
+	position: absolute;
+	top: 40%;
+	left: 46%;
+	border: 16px solid #f3f3f3; /* Light grey */
+	border-top: 16px solid #3498db; /* Blue */
+	border-radius: 50%;
+	width: 120px;
+	height: 120px;
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
