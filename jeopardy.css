@@ -118,3 +118,18 @@ td {
 		transform: rotate(360deg);
 	}
 }
+
+@media all and (max-width: 1300px) {
+	#startButton {
+		position: relative;
+		right: -35%;
+	}
+
+	#jeopardyTable {
+		border-collapse: collapse;
+		margin: 0 auto;
+		position: relative;
+		margin-left: 0%;
+		margin-right: 0%;
+	}
+}
